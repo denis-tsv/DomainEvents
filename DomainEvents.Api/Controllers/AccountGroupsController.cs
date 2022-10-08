@@ -15,8 +15,8 @@ public class AccountGroupsController : ControllerBase
         _sender = sender;
     }
 
-    [HttpPost("{id}")]
-    public async Task RemoveAccount([FromRoute] int id, [FromBody] int accountId, CancellationToken cancellationToken)
+    [HttpDelete("{id}/account/{accountId}")]
+    public async Task RemoveAccount([FromRoute] int id, [FromRoute] int accountId, CancellationToken cancellationToken)
     {
         await _sender.Send(new RemoveAccountFromGroupCommand { AccountGroupId = id, AccountId = accountId }, cancellationToken);
     }
