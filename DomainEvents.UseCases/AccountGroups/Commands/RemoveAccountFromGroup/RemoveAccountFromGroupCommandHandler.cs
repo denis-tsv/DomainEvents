@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountGroupGroup;
+namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
 
 public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAccountFromGroupCommand>
 {
