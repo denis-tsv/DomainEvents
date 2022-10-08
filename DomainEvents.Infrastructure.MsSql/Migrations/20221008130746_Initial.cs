@@ -35,7 +35,7 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AccountGroupAccount",
+                name: "AccountGroupAccounts",
                 columns: table => new
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false),
@@ -43,15 +43,15 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AccountGroupAccount", x => new { x.AccountId, x.AccountGroupId });
+                    table.PrimaryKey("PK_AccountGroupAccounts", x => new { x.AccountId, x.AccountGroupId });
                     table.ForeignKey(
-                        name: "FK_AccountGroupAccount_AccountGroups_AccountGroupId",
+                        name: "FK_AccountGroupAccounts_AccountGroups_AccountGroupId",
                         column: x => x.AccountGroupId,
                         principalTable: "AccountGroups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AccountGroupAccount_Accounts_AccountId",
+                        name: "FK_AccountGroupAccounts_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
@@ -59,15 +59,15 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccountGroupAccount_AccountGroupId",
-                table: "AccountGroupAccount",
+                name: "IX_AccountGroupAccounts_AccountGroupId",
+                table: "AccountGroupAccounts",
                 column: "AccountGroupId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AccountGroupAccount");
+                name: "AccountGroupAccounts");
 
             migrationBuilder.DropTable(
                 name: "AccountGroups");

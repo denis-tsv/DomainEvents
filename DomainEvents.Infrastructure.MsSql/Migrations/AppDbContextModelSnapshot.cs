@@ -67,7 +67,7 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
 
                     b.HasIndex("AccountGroupId");
 
-                    b.ToTable("AccountGroupAccount");
+                    b.ToTable("AccountGroupAccounts");
                 });
 
             modelBuilder.Entity("DomainEvents.Entities.AccountGroupAccount", b =>
