@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DomainEvents.Infrastructure.MsSql.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221008081422_Initial")]
+    [Migration("20221008130746_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,7 +69,7 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
 
                     b.HasIndex("AccountGroupId");
 
-                    b.ToTable("AccountGroupAccount");
+                    b.ToTable("AccountGroupAccounts");
                 });
 
             modelBuilder.Entity("DomainEvents.Entities.AccountGroupAccount", b =>
