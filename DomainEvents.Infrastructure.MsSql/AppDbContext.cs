@@ -19,5 +19,9 @@ public class AppDbContext : DbContext, IDbContext
     {
         modelBuilder.Entity<AccountGroupAccount>()
             .HasKey(x => new { x.AccountId, x.AccountGroupId });
+
+        modelBuilder.Entity<AccountGroup>()
+            .Property(x => x.Name)
+            .HasMaxLength(64);
     }
 }
