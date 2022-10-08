@@ -1,5 +1,6 @@
 ﻿using DomainEvents.Entities;
 using DomainEvents.Infrastructure.Interfaces;
+using DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountGroupGroup;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,26 +9,26 @@ namespace DomainEvents.UseCases.AccountGroups.EventHandlers;
 public class AccountDeletedEventHandler : INotificationHandler<AccountDeletedEvent>
 {
     private readonly IDbContext _dbContext;
-    private readonly AccountGroupService _accountGroupService;
+    private readonly ISender _sender;
 
-    public AccountDeletedEventHandler(IDbContext dbContext, AccountGroupService accountGroupService)
+    public AccountDeletedEventHandler(IDbContext dbContext, ISender sender)
     {
         _dbContext = dbContext;
-        _accountGroupService = accountGroupService;
+        _sender = sender;
     }
 
     public async Task Handle(AccountDeletedEvent notification, CancellationToken cancellationToken)
     {
-        var accountGroups = await _dbContext.AccountGroups
+        var accountGroupIds = await _dbContext.AccountGroups
             .Where(x => x.Accounts.Any(a => a.AccountId == notification.AccountId))
-            .Include(x => x.Accounts)
+            .Select(x => x.Id)
             .ToListAsync(cancellationToken);
 
-        foreach (var accountGroup in accountGroups)
+        foreach (var accountGroupId in accountGroupIds)
         {
-            _accountGroupService.RemoveAccountFromAccountGroup(accountGroup, notification.AccountId, _dbContext);
+            await _sender.Send(
+                new RemoveAccountFromGroupCommand
+                    { AccountId = notification.AccountId, AccountGroupId = accountGroupId }, cancellationToken);
         }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

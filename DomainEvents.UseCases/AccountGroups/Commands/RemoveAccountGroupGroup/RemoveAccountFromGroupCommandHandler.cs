@@ -7,12 +7,10 @@ namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountGroupGroup;
 public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAccountFromGroupCommand>
 {
     private readonly IDbContext _dbContext;
-    private readonly AccountGroupService _accountGroupService;
 
-    public RemoveAccountFromGroupCommandHandler(IDbContext dbContext, AccountGroupService accountGroupService)
+    public RemoveAccountFromGroupCommandHandler(IDbContext dbContext)
     {
         _dbContext = dbContext;
-        _accountGroupService = accountGroupService;
     }
 
     protected override async Task Handle(RemoveAccountFromGroupCommand request, CancellationToken cancellationToken)
@@ -23,7 +21,12 @@ public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAc
         
         if (accountGroup == null) throw new InvalidOperationException("AccountGroup not found");
 
-        _accountGroupService.RemoveAccountFromAccountGroup(accountGroup, request.AccountId, _dbContext);
+        accountGroup.Accounts.RemoveAll(x => x.AccountId == request.AccountId);
+
+        if (!accountGroup.Accounts.Any())
+        {
+            _dbContext.AccountGroups.Remove(accountGroup);
+        }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }   
