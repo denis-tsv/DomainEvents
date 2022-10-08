@@ -1,4 +1,5 @@
 ﻿using DomainEvents.Infrastructure.Interfaces;
+using DomainEvents.UseCases.AccountGroups;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,12 @@ namespace DomainEvents.UseCases.Accounts.Commands.DeleteAccount;
 public class DeleteAccountCommandHandler : AsyncRequestHandler<DeleteAccountCommand>
 {
     private readonly IDbContext _dbContext;
+    private readonly AccountGroupService _accountGroupService;
 
-    public DeleteAccountCommandHandler(IDbContext dbContext)
+    public DeleteAccountCommandHandler(IDbContext dbContext, AccountGroupService accountGroupService)
     {
         _dbContext = dbContext;
+        _accountGroupService = accountGroupService;
     }
 
     protected override async Task Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
@@ -27,12 +30,7 @@ public class DeleteAccountCommandHandler : AsyncRequestHandler<DeleteAccountComm
 
         foreach (var accountGroup in accountGroups)
         {
-            accountGroup.Accounts.RemoveAll(x => x.AccountId == request.AccountId);
-
-            if (!accountGroup.Accounts.Any())
-            {
-                _dbContext.AccountGroups.Remove(accountGroup);
-            }
+            _accountGroupService.RemoveAccountFromAccountGroup(accountGroup, request.AccountId, _dbContext);
         }
 
         await _dbContext.SaveChangesAsync(cancellationToken);
