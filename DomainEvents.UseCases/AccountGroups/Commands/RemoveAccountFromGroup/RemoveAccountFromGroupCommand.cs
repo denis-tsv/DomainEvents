@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountGroupGroup;
+namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
 
 public class RemoveAccountFromGroupCommand : IRequest
 {

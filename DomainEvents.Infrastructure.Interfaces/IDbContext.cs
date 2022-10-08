@@ -12,5 +12,7 @@ public interface IDbContext
 
     DbSet<AccountGroup> AccountGroups { get; }
 
+    DbSet<AccountGroupAccount> AccountGroupAccounts { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -24,6 +24,8 @@ public class AppDbContext : DbContext, IDbContext
 
     public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
 
+    public DbSet<AccountGroupAccount> AccountGroupAccounts { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AccountGroupAccount>()
