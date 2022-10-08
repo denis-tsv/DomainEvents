@@ -2,7 +2,7 @@
 
 namespace DomainEvents.UseCases.Accounts.Commands.DeleteAccount;
 
-public class DeleteAccountCommand : IRequest
+public class DeleteAccountCommand : IRequest, ITransactionalCommand
 {
     public int AccountId { get; set; }
 }
