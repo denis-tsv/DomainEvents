@@ -7,10 +7,12 @@ namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
 public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAccountFromGroupCommand>
 {
     private readonly IDbContext _dbContext;
+    private readonly AccountGroupService _accountGroupService;
 
-    public RemoveAccountFromGroupCommandHandler(IDbContext dbContext)
+    public RemoveAccountFromGroupCommandHandler(IDbContext dbContext, AccountGroupService accountGroupService)
     {
         _dbContext = dbContext;
+        _accountGroupService = accountGroupService;
     }
 
     protected override async Task Handle(RemoveAccountFromGroupCommand request, CancellationToken cancellationToken)
@@ -19,12 +21,7 @@ public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAc
             .Include(x => x.Accounts) //can't include filter because need to check accounts count
             .FirstOrDefaultAsync(x => x.Id == request.AccountGroupId, cancellationToken);
 
-        accountGroup!.RemoveAccount(request.AccountId);
-
-        if (!accountGroup.Accounts.Any())
-        {
-            _dbContext.AccountGroups.Remove(accountGroup);
-        }
+        _accountGroupService.RemoveAccountFromGroup(accountGroup!, request.AccountId);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
     }

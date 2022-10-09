@@ -8,7 +8,5 @@ public class Account : BaseEntity
     public void Delete()
     {
         IsDeleted = true;
-
-        Notifications.Add(new AccountDeletedNotification { AccountId = Id });
     }
 }
