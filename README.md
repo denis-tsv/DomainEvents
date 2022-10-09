@@ -4,4 +4,5 @@ This sample shows how to use domain events. Let's imagine that we have an applic
 - master branch contains two independent handlers with similar logic of removal account from account group
 - command-from-command branch inoked RemoveAccountFromGroupCommand from DeleteAccountCommandHandler ([diff](https://github.com/denis-tsv/DomainEvents/pull/5/files))
 - notification-from-command branch published AccountDeletedNotification and invoked RemoveAccountFromGroupCommand from notification handler ([diff](https://github.com/denis-tsv/DomainEvents/pull/6/files))
-- domain-event branch publiched AccountDeletedNotification using universal notifications engine ([diff](https://github.com/denis-tsv/DomainEvents/pull/7/files))
+- domain-event branch published AccountDeletedNotification using universal notifications engine ([diff](https://github.com/denis-tsv/DomainEvents/pull/7/files))
+- no-domain-event branch replaced notification by application service ([diff](https://github.com/denis-tsv/DomainEvents/pull/9/files))
