@@ -15,6 +15,8 @@ public class TransactionPipelineBehavior<TRequest, TResponse> : IPipelineBehavio
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
+        if (_dbContext.IsTransactionStarted) return await next();
+
         await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
 
         var result = await next();
