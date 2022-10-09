@@ -16,12 +16,9 @@ public class DeleteAccountCommandHandler : AsyncRequestHandler<DeleteAccountComm
 
     protected override async Task Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
-
-        var accounts = await _dbContext.Accounts
+        await _dbContext.Accounts
             .Where(x => x.Id == request.AccountId)
             .BatchUpdateAsync(x => new Account { IsDeleted = true }, cancellationToken: cancellationToken);
-        if (accounts == 0) throw new InvalidOperationException("Account not found or already deleted");
 
         await _dbContext.AccountGroupAccounts
             .Where(x => x.AccountId == request.AccountId)
@@ -30,7 +27,5 @@ public class DeleteAccountCommandHandler : AsyncRequestHandler<DeleteAccountComm
         await _dbContext.AccountGroups
             .Where(x => !x.Accounts.Any())
             .BatchDeleteAsync(cancellationToken);
-
-        await transaction.CommitAsync(cancellationToken);
     }
 }

@@ -15,8 +15,6 @@ public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAc
 
     protected override async Task Handle(RemoveAccountFromGroupCommand request, CancellationToken cancellationToken)
     {
-        await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
-
         await _dbContext.AccountGroupAccounts
             .Where(x => x.AccountGroupId == request.AccountGroupId && x.AccountId == request.AccountId)
             .BatchDeleteAsync(cancellationToken);
@@ -24,8 +22,5 @@ public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAc
         await _dbContext.AccountGroups
             .Where(x => x.Id == request.AccountGroupId && !x.Accounts.Any())
             .BatchDeleteAsync(cancellationToken);
-
-        await transaction.CommitAsync(cancellationToken);
-    }   
-    
+    }
 }
