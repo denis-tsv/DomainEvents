@@ -1,5 +1,6 @@
 ﻿using DomainEvents.Entities;
 using DomainEvents.Infrastructure.Interfaces;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -7,8 +8,11 @@ namespace DomainEvents.Infrastructure.MsSql;
 
 public class AppDbContext : DbContext, IDbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IPublisher _publisher;
+
+    public AppDbContext(DbContextOptions<AppDbContext> options, IPublisher publisher) : base(options)
     {
+        _publisher = publisher;
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;
@@ -34,5 +38,30 @@ public class AppDbContext : DbContext, IDbContext
         IsTransactionStarted = true;
 
         return Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var notifications = new List<INotification>();
+
+        foreach (var entry in ChangeTracker.Entries())
+        {
+            if (entry.State is EntityState.Modified or EntityState.Added or EntityState.Deleted)
+            {
+                if (entry.Entity is BaseEntity entity)
+                {
+                    notifications.AddRange(entity.FetchNotifications());
+                }
+            }
+        }
+
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        foreach (var notification in notifications)
+        {
+            await _publisher.Publish(notification, cancellationToken);
+        }
+
+        return result;
     }
 }

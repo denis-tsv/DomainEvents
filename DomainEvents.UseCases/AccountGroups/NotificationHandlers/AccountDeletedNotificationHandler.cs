@@ -1,6 +1,6 @@
-﻿using DomainEvents.Infrastructure.Interfaces;
+﻿using DomainEvents.Entities;
+using DomainEvents.Infrastructure.Interfaces;
 using DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
-using DomainEvents.UseCases.Accounts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

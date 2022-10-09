@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace DomainEvents.UseCases.Accounts;
+namespace DomainEvents.Entities;
 
 public class AccountDeletedNotification : INotification
 {
