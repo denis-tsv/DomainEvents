@@ -1,11 +1,8 @@
 using DomainEvents.Infrastructure.Interfaces;
 using DomainEvents.Infrastructure.MsSql;
 using DomainEvents.UseCases;
-using DomainEvents.UseCases.AccountGroups;
-using DomainEvents.UseCases.Accounts;
 using DomainEvents.UseCases.Accounts.Commands.DeleteAccount;
 using MediatR;
-using MediatR.Pipeline;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,8 +16,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IDbContext, AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DomainEvents")));
 builder.Services.AddMediatR(typeof(DeleteAccountCommand));
-builder.Services.AddScoped(typeof(IRequestPreProcessor<>), typeof(CheckAccountPreProcessor<>));
-builder.Services.AddScoped(typeof(IRequestPreProcessor<>), typeof(CheckAccountGroupPreProcessor<>));
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
 
 var app = builder.Build();
