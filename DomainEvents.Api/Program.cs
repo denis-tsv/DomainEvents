@@ -22,6 +22,7 @@ builder.Services.AddMediatR(typeof(DeleteAccountCommand));
 builder.Services.AddScoped(typeof(IRequestPreProcessor<>), typeof(CheckAccountPreProcessor<>));
 builder.Services.AddScoped(typeof(IRequestPreProcessor<>), typeof(CheckAccountGroupPreProcessor<>));
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
+builder.Services.AddScoped<AccountGroupService>();
 
 var app = builder.Build();
 
