@@ -1,10 +1,13 @@
 ﻿using DomainEvents.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DomainEvents.Infrastructure.Interfaces;
 
 public interface IDbContext
 {
+    Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
+
     DbSet<Account> Accounts { get; }
 
     DbSet<AccountGroup> AccountGroups { get; }

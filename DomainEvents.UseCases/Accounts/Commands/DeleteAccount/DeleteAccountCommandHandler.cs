@@ -1,6 +1,7 @@
-﻿using DomainEvents.Infrastructure.Interfaces;
+﻿using DomainEvents.Entities;
+using DomainEvents.Infrastructure.Interfaces;
+using EFCore.BulkExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Accounts.Commands.DeleteAccount;
 
@@ -15,26 +16,16 @@ public class DeleteAccountCommandHandler : AsyncRequestHandler<DeleteAccountComm
 
     protected override async Task Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        var account = await _dbContext.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken);
-        if (account == null) throw new InvalidOperationException("Account not found");
+        await _dbContext.Accounts
+            .Where(x => x.Id == request.AccountId)
+            .BatchUpdateAsync(x => new Account { IsDeleted = true }, cancellationToken: cancellationToken);
 
-        account.IsDeleted = true;
+        await _dbContext.AccountGroupAccounts
+            .Where(x => x.AccountId == request.AccountId)
+            .BatchDeleteAsync(cancellationToken);
 
-        var accountGroups = await _dbContext.AccountGroups
-            .Where(x => x.Accounts.Any(a => a.AccountId == request.AccountId))
-            .Include(x => x.Accounts)
-            .ToListAsync(cancellationToken);
-
-        foreach (var accountGroup in accountGroups)
-        {
-            accountGroup.Accounts.RemoveAll(x => x.AccountId == request.AccountId);
-
-            if (!accountGroup.Accounts.Any())
-            {
-                _dbContext.AccountGroups.Remove(accountGroup);
-            }
-        }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await _dbContext.AccountGroups
+            .Where(x => !x.Accounts.Any())
+            .BatchDeleteAsync(cancellationToken);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using DomainEvents.Infrastructure.Interfaces;
+using EFCore.BulkExtensions;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
 
@@ -15,20 +15,12 @@ public class RemoveAccountFromGroupCommandHandler : AsyncRequestHandler<RemoveAc
 
     protected override async Task Handle(RemoveAccountFromGroupCommand request, CancellationToken cancellationToken)
     {
-        var accountGroup = await _dbContext.AccountGroups
-            .Include(x => x.Accounts)
-            .SingleOrDefaultAsync(x => x.Id == request.AccountGroupId, cancellationToken);
-        
-        if (accountGroup == null) throw new InvalidOperationException("AccountGroup not found");
+        await _dbContext.AccountGroupAccounts
+            .Where(x => x.AccountGroupId == request.AccountGroupId && x.AccountId == request.AccountId)
+            .BatchDeleteAsync(cancellationToken);
 
-        accountGroup.Accounts.RemoveAll(x => x.AccountId == request.AccountId);
-
-        if (!accountGroup.Accounts.Any())
-        {
-            _dbContext.AccountGroups.Remove(accountGroup);
-        }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
-    }   
-    
+        await _dbContext.AccountGroups
+            .Where(x => x.Id == request.AccountGroupId && !x.Accounts.Any())
+            .BatchDeleteAsync(cancellationToken);
+    }
 }

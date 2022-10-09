@@ -1,6 +1,7 @@
 ﻿using DomainEvents.Entities;
 using DomainEvents.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DomainEvents.Infrastructure.MsSql;
 
@@ -24,5 +25,10 @@ public class AppDbContext : DbContext, IDbContext
         modelBuilder.Entity<AccountGroup>()
             .Property(x => x.Name)
             .HasMaxLength(64);
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+    {
+        return Database.BeginTransactionAsync(cancellationToken);
     }
 }
