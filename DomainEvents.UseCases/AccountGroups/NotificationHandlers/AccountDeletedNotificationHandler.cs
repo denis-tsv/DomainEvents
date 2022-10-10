@@ -25,6 +25,7 @@ public class AccountDeletedNotificationHandler : INotificationHandler<AccountDel
             .Distinct()
             .ToListAsync(cancellationToken);
 
+        // Command handlers shares not thread safe DbContext, so we send command sequently, but not in parallel
         foreach (var accountGroupId in accountGroupIds)
         {
             await _sender.Send(
