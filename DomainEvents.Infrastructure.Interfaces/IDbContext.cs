@@ -6,6 +6,8 @@ namespace DomainEvents.Infrastructure.Interfaces;
 
 public interface IDbContext
 {
+    bool IsTransactionStarted { get; }
+
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
 
     DbSet<Account> Accounts { get; }
