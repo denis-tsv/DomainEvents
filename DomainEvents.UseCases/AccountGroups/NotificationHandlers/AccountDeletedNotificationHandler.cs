@@ -1,6 +1,6 @@
-﻿using DomainEvents.Infrastructure.Interfaces;
+﻿using DomainEvents.Entities;
+using DomainEvents.Infrastructure.Interfaces;
 using DomainEvents.UseCases.AccountGroups.Commands.RemoveAccountFromGroup;
-using DomainEvents.UseCases.Accounts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +25,7 @@ public class AccountDeletedNotificationHandler : INotificationHandler<AccountDel
             .Distinct()
             .ToListAsync(cancellationToken);
 
+        // Command handlers shares not thread safe DbContext, so we send command sequently, but not in parallel
         foreach (var accountGroupId in accountGroupIds)
         {
             await _sender.Send(
