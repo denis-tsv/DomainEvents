@@ -11,18 +11,18 @@ public class AppDbContext : DbContext, IDbContext
     {
     }
 
-    public DbSet<Account> Accounts { get; set; } = null!;
+    public DbSet<Product> Products { get; set; } = null!;
 
-    public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
 
-    public DbSet<AccountGroupAccount> AccountGroupAccounts { get; set; } = null!;
+    public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AccountGroupAccount>()
-            .HasKey(x => new { x.AccountId, x.AccountGroupId });
+        modelBuilder.Entity<ProductCategory>()
+            .HasKey(x => new { x.ProductId, x.CategoryId});
 
-        modelBuilder.Entity<AccountGroup>()
+        modelBuilder.Entity<Category>()
             .Property(x => x.Name)
             .HasMaxLength(64);
     }
