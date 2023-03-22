@@ -18,7 +18,7 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
     public async Task Handle(RemoveProductFromCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = await _dbContext.Categories
-            .Include(x => x.Products) //can't include filter because need to check accounts count
+            .Include(x => x.Products) //can't include filter because need to check products count
             .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
 
         category!.RemoveProduct(request.ProductId);
