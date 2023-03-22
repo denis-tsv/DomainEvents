@@ -15,18 +15,18 @@ public class AppDbContext : DbContext, IDbContext
         _publisher = publisher;
     }
 
-    public DbSet<Account> Accounts { get; set; } = null!;
+    public DbSet<Product> Products { get; set; } = null!;
 
-    public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
+    public DbSet<Category> Categories { get; set; } = null!;
 
-    public DbSet<AccountGroupAccount> AccountGroupAccounts { get; set; } = null!;
+    public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AccountGroupAccount>()
-            .HasKey(x => new { x.AccountId, x.AccountGroupId });
+        modelBuilder.Entity<ProductCategory>()
+            .HasKey(x => new { x.ProductId, x.CategoryId});
 
-        modelBuilder.Entity<AccountGroup>()
+        modelBuilder.Entity<Category>()
             .Property(x => x.Name)
             .HasMaxLength(64);
     }
@@ -40,23 +40,15 @@ public class AppDbContext : DbContext, IDbContext
         return Database.BeginTransactionAsync(cancellationToken);
     }
 
+    // can be implemented as interceptor
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var notifications = new List<INotification>();
-
-        foreach (var entry in ChangeTracker.Entries())
-        {
-            if (entry.State is EntityState.Modified or EntityState.Added or EntityState.Deleted)
-            {
-                if (entry.Entity is BaseEntity entity)
-                {
-                    notifications.AddRange(entity.FetchNotifications());
-                }
-            }
-        }
-
         var result = await base.SaveChangesAsync(cancellationToken);
 
+        var notifications = ChangeTracker.Entries<BaseEntity>()
+            .SelectMany(x => x.Entity.FetchNotifications())
+            .ToList();
+        
         foreach (var notification in notifications)
         {
             await _publisher.Publish(notification, cancellationToken);

@@ -1,6 +1,6 @@
 ﻿namespace DomainEvents.Entities;
 
-public class Account : BaseEntity
+public class Product : BaseEntity
 {
     public int Id { get; set; }
     public bool IsDeleted { get; set; }
