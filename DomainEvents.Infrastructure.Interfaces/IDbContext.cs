@@ -10,11 +10,11 @@ public interface IDbContext
 
     Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken);
 
-    DbSet<Account> Accounts { get; }
+    DbSet<Product> Products { get; }
 
-    DbSet<AccountGroup> AccountGroups { get; }
+    DbSet<Category> Categories { get; }
 
-    DbSet<AccountGroupAccount> AccountGroupAccounts { get; }
+    DbSet<ProductCategory> ProductCategories { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
