@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DomainEvents.Infrastructure.MsSql.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221008130746_Initial")]
+    [Migration("20230322055542_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,23 +23,7 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("DomainEvents.Entities.Account", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Accounts");
-                });
-
-            modelBuilder.Entity("DomainEvents.Entities.AccountGroup", b =>
+            modelBuilder.Entity("DomainEvents.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,46 +38,62 @@ namespace DomainEvents.Infrastructure.MsSql.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AccountGroups");
+                    b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("DomainEvents.Entities.AccountGroupAccount", b =>
+            modelBuilder.Entity("DomainEvents.Entities.Product", b =>
                 {
-                    b.Property<int>("AccountId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("AccountGroupId")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.HasKey("AccountId", "AccountGroupId");
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("AccountGroupId");
+                    b.HasKey("Id");
 
-                    b.ToTable("AccountGroupAccounts");
+                    b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("DomainEvents.Entities.AccountGroupAccount", b =>
+            modelBuilder.Entity("DomainEvents.Entities.ProductCategory", b =>
                 {
-                    b.HasOne("DomainEvents.Entities.AccountGroup", "AccountGroup")
-                        .WithMany("Accounts")
-                        .HasForeignKey("AccountGroupId")
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "CategoryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("ProductCategories");
+                });
+
+            modelBuilder.Entity("DomainEvents.Entities.ProductCategory", b =>
+                {
+                    b.HasOne("DomainEvents.Entities.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DomainEvents.Entities.Account", "Account")
+                    b.HasOne("DomainEvents.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("Category");
 
-                    b.Navigation("AccountGroup");
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("DomainEvents.Entities.AccountGroup", b =>
+            modelBuilder.Entity("DomainEvents.Entities.Category", b =>
                 {
-                    b.Navigation("Accounts");
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
