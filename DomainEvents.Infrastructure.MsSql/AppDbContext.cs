@@ -24,7 +24,7 @@ public class AppDbContext : DbContext, IDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<ProductCategory>()
-            .HasKey(x => new { x.ProductId, x.CategoryId});
+            .HasKey(x => new { x.ProductId, x.CategoryId });
 
         modelBuilder.Entity<Category>()
             .Property(x => x.Name)
@@ -43,17 +43,19 @@ public class AppDbContext : DbContext, IDbContext
     // can be implemented as interceptor
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var result = await base.SaveChangesAsync(cancellationToken);
-
-        var notifications = ChangeTracker.Entries<BaseEntity>()
-            .SelectMany(x => x.Entity.FetchNotifications())
-            .ToList();
-        
-        foreach (var notification in notifications)
+        while(true)
         {
-            await _publisher.Publish(notification, cancellationToken);
+            var notifications = ChangeTracker.Entries<BaseEntity>()
+                .SelectMany(x => x.Entity.FetchNotifications())
+                .ToList();
+            if (!notifications.Any()) break;
+
+            foreach (var notification in notifications)
+            {
+                await _publisher.Publish(notification, cancellationToken);
+            }
         }
 
-        return result;
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
