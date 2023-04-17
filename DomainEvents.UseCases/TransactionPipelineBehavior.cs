@@ -4,7 +4,7 @@ using MediatR;
 namespace DomainEvents.UseCases;
 
 public class TransactionPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
-    where TRequest : IRequest<TResponse>, ITransactionRequest
+    where TRequest : ITransactionRequest
 {
     private readonly IDbContext _dbContext;
 
