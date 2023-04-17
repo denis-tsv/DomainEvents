@@ -5,4 +5,5 @@ This sample shows how to use domain events. Let's imagine that we have eshop app
 - command-from-command branch inoked RemoveProductFromCategoryCommand from DeleteProductCommandHandler ([diff](https://github.com/denis-tsv/DomainEvents/pull/5/files))
 - notification-from-command branch published ProductDeletedNotification and invoked RemoveProductFromCategoryCommand from notification handler ([diff](https://github.com/denis-tsv/DomainEvents/pull/6/files))
 - domain-event branch published ProductDeletedNotification using universal notifications engine ([diff](https://github.com/denis-tsv/DomainEvents/pull/7/files))
+- domain-event-short-transactions branch used short transactions for commands without return value and without bulk queries ([diff](https://github.com/denis-tsv/DomainEvents/pull/10/files))
 - no-domain-event branch replaced notification by application service ([diff](https://github.com/denis-tsv/DomainEvents/pull/9/files))
