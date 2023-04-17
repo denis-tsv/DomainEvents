@@ -27,7 +27,5 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
         {
             _dbContext.Categories.Remove(category);
         }
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

@@ -19,7 +19,5 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
         var product = await _dbContext.Products.FindAsync(new object?[] { request.ProductId }, cancellationToken);
         
         product!.Delete();
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
