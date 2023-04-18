@@ -15,7 +15,7 @@ public class CategoriesController : ControllerBase
         _sender = sender;
     }
 
-    [HttpDelete("{id}/product/{productId}")]
+    [HttpDelete("{id:int}/product/{productId:int}")]
     public async Task RemoveProduct([FromRoute] int id, [FromRoute] int productId, CancellationToken cancellationToken)
     {
         await _sender.Send(new RemoveProductFromCategoryCommand(productId, id), cancellationToken);
