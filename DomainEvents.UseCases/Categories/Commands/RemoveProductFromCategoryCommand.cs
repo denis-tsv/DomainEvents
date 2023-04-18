@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Categories.Commands;
 
-public record RemoveProductFromCategoryCommand(int ProductId, int CategoryId) : IRequest, ICategoryRequest;
+public record RemoveProductFromCategoryCommand(int ProductId, int CategoryId) : IRequest;
 
 public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemoveProductFromCategoryCommand>
 {

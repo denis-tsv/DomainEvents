@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Products.Commands;
 
-public record DeleteProductCommand(int ProductId) : IRequest, IProductRequest;
+public record DeleteProductCommand(int ProductId) : IRequest;
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
 {
