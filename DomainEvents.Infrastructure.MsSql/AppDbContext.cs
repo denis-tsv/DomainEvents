@@ -32,8 +32,6 @@ public class AppDbContext : DbContext, IDbContext
             .HasMaxLength(64);
     }
 
-    public bool IsTransactionStarted => _transaction != null;
-
     public async Task BeginTransactionAsync(CancellationToken cancellationToken)
     {
         _transaction = await Database.BeginTransactionAsync(cancellationToken);
