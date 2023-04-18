@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Products.Commands;
 
-public record UpdateProductCommand(int Id) : IRequest;
+public record UpdateProductCommand(int Id) : IRequest, ITransactionRequest;
 
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
 {
@@ -17,12 +17,10 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
 
     public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
+        await _dbContext.BeginTransactionAsync(cancellationToken);
 
         await _dbContext.Products
             .Where(x => x.Id == request.Id)
             .ExecuteUpdateAsync(x => x.SetProperty(p => p.IsDeleted, false), cancellationToken);
-
-        await transaction.CommitAsync(cancellationToken);
     }
 }
