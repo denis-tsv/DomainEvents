@@ -19,7 +19,7 @@ public class ProductsController : ControllerBase
     public async Task<int> Create(CancellationToken cancellationToken)
     {
         var result = await _sender.Send(new CreateProductCommand(), cancellationToken);
-        return result.Id;
+        return result.ProductId;
     }
 
     [HttpPut("{id:int}")]
