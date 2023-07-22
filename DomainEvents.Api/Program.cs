@@ -1,8 +1,6 @@
 using DomainEvents.Infrastructure.Interfaces;
 using DomainEvents.Infrastructure.MsSql;
-using DomainEvents.UseCases;
 using DomainEvents.UseCases.Products.Commands;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IDbContext, AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DomainEvents")));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteProductCommand>());
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
 
 var app = builder.Build();
 

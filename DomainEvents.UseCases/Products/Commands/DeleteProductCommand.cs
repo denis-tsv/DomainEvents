@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Products.Commands;
 
-public record DeleteProductCommand(int ProductId) : IRequest, ITransactionRequest;
+public record DeleteProductCommand(int ProductId) : IRequest;
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
 {
@@ -20,6 +20,8 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
 
     public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
+        await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
+
         await _dbContext.Products
             .Where(x => x.Id == request.ProductId)
             .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsDeleted, true), cancellationToken);
@@ -34,5 +36,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
         {
             await _sender.Send(new RemoveProductFromCategoryCommand(request.ProductId, categoryId), cancellationToken);
         }
+
+        await transaction.CommitAsync(cancellationToken);
     }
 }
