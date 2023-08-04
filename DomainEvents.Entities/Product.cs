@@ -8,7 +8,5 @@ public class Product : BaseEntity
     public void Delete()
     {
         IsDeleted = true;
-
-        Notifications.Add(new ProductDeletedNotification(Id));
     }
 }
