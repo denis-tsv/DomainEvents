@@ -9,6 +9,7 @@ namespace DomainEvents.Infrastructure.MsSql;
 public class AppDbContext : DbContext, IDbContext
 {
     private readonly IPublisher _publisher;
+    private bool _isTransactionStarted;
 
     public AppDbContext(DbContextOptions<AppDbContext> options, IPublisher publisher) : base(options)
     {
@@ -31,11 +32,12 @@ public class AppDbContext : DbContext, IDbContext
             .HasMaxLength(64);
     }
 
-    public bool IsTransactionStarted { get; private set; }
-
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
     {
-        IsTransactionStarted = true;
+        if (_isTransactionStarted)
+            return Task.FromResult<IDbContextTransaction>(new FakeDbContextTransaction());
+
+        _isTransactionStarted = true;
 
         return Database.BeginTransactionAsync(cancellationToken);
     }
@@ -57,5 +59,28 @@ public class AppDbContext : DbContext, IDbContext
         }
 
         return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private class FakeDbContextTransaction : IDbContextTransaction
+    {
+        public void Dispose()
+        {
+        }
+
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+        public void Commit()
+        {
+        }
+
+        public Task CommitAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+        public void Rollback()
+        {
+        }
+
+        public Task RollbackAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+        public Guid TransactionId { get; }
     }
 }

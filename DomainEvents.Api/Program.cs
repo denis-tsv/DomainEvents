@@ -16,7 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IDbContext, AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DomainEvents")));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteProductCommand>());
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
+builder.Services.AddScoped<IExternalService, ExternalService>();
+builder.Services.AddScoped<IMessageBroker, MessageBroker>();
 
 var app = builder.Build();
 
@@ -34,3 +35,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+public class ExternalService : IExternalService
+{
+    public Task LongOperationAsync(CancellationToken token) => Task.CompletedTask;
+}
+
+public class MessageBroker : IMessageBroker
+{
+    public Task SendMessageAsync(object message, CancellationToken token) => Task.CompletedTask;
+}
