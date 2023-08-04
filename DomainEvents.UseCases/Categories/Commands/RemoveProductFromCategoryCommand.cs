@@ -11,11 +11,13 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
 {
     private readonly IDbContext _dbContext;
     private readonly IMessageBroker _messageBroker;
+    private readonly CategoryService _categoryService;
 
-    public RemoveProductFromCategoryCommandHandler(IDbContext dbContext, IMessageBroker messageBroker)
+    public RemoveProductFromCategoryCommandHandler(IDbContext dbContext, IMessageBroker messageBroker, CategoryService categoryService)
     {
         _dbContext = dbContext;
         _messageBroker = messageBroker;
+        _categoryService = categoryService;
     }
 
     public async Task Handle(RemoveProductFromCategoryCommand request, CancellationToken cancellationToken)
@@ -26,23 +28,18 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
             .Include(x => x.Products) //can't include filter because need to check products count
             .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
 
-        category!.RemoveProduct(request.ProductId);
-
-        if (!category.Products.Any())
-        {
-            _dbContext.Categories.Remove(category);
-        }
+        _categoryService.RemoveProductFromCategory(category!, request.ProductId);
 
         var message = new Message { AvailableAfter = DateTime.UtcNow.AddSeconds(30) };
         _dbContext.Messages.Add(message);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await transaction.CommitAsync(cancellationToken); //doing nothing
+        await transaction.CommitAsync(cancellationToken);
 
-        await _messageBroker.SendMessageAsync(message, cancellationToken); //fail will rollback transaction
+        await _messageBroker.SendMessageAsync(message, cancellationToken);
 
         _dbContext.Messages.Remove(message);
-        await _dbContext.SaveChangesAsync(cancellationToken); //fail will rollback transaction, but message will stay in message broker
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
