@@ -1,4 +1,5 @@
-﻿using DomainEvents.Infrastructure.Interfaces;
+﻿using DomainEvents.Entities;
+using DomainEvents.Infrastructure.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ public record RemoveProductFromCategoryCommand(int ProductId, int CategoryId) : 
 public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemoveProductFromCategoryCommand>
 {
     private readonly IDbContext _dbContext;
+    private readonly IMessageBroker _messageBroker;
 
-    public RemoveProductFromCategoryCommandHandler(IDbContext dbContext)
+    public RemoveProductFromCategoryCommandHandler(IDbContext dbContext, IMessageBroker messageBroker)
     {
         _dbContext = dbContext;
+        _messageBroker = messageBroker;
     }
 
     public async Task Handle(RemoveProductFromCategoryCommand request, CancellationToken cancellationToken)
@@ -30,8 +33,16 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
             _dbContext.Categories.Remove(category);
         }
 
+        var message = new Message { AvailableAfter = DateTime.UtcNow.AddSeconds(30) };
+        _dbContext.Messages.Add(message);
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        await transaction.CommitAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken); //doing nothing
+
+        await _messageBroker.SendMessageAsync(message, cancellationToken); //fail will rollback transaction
+
+        _dbContext.Messages.Remove(message);
+        await _dbContext.SaveChangesAsync(cancellationToken); //fail will rollback transaction, but message will stay in message broker
     }
 }

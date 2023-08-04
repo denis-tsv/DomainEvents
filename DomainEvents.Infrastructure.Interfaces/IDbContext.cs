@@ -13,6 +13,7 @@ public interface IDbContext
     DbSet<Category> Categories { get; }
 
     DbSet<ProductCategory> ProductCategories { get; }
+    DbSet<Message> Messages { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
