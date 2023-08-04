@@ -21,6 +21,8 @@ public class AppDbContext : DbContext, IDbContext
     public DbSet<Category> Categories { get; set; } = null!;
 
     public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
+    
+    public DbSet<Message> Messages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
