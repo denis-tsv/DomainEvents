@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Categories.Commands;
 
-public record RemoveProductFromCategoryCommand(int ProductId, int CategoryId) : IRequest, ITransactionRequest;
+public record RemoveProductFromCategoryCommand(int ProductId, int CategoryId) : IRequest;
 
 public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemoveProductFromCategoryCommand>
 {
@@ -19,6 +19,8 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
 
     public async Task Handle(RemoveProductFromCategoryCommand request, CancellationToken cancellationToken)
     {
+        await using var transaction = await _dbContext.BeginTransactionAsync(cancellationToken);
+
         var category = await _dbContext.Categories
             .Include(x => x.Products) //can't include filter because need to check products count
             .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
@@ -26,5 +28,7 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
         _categoryService.RemoveProductFromCategory(category!, request.ProductId);
 
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
     }
 }

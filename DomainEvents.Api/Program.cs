@@ -1,9 +1,7 @@
 using DomainEvents.Infrastructure.Interfaces;
 using DomainEvents.Infrastructure.MsSql;
-using DomainEvents.UseCases;
 using DomainEvents.UseCases.Categories;
 using DomainEvents.UseCases.Products.Commands;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +15,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<IDbContext, AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DomainEvents")));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteProductCommand>());
-builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
 builder.Services.AddScoped<CategoryService>();
+
+builder.Services.AddScoped<IExternalService, ExternalService>();
 
 var app = builder.Build();
 
@@ -36,3 +35,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public class ExternalService : IExternalService
+{
+    public Task LongOperationAsync(CancellationToken token) => Task.CompletedTask;
+}
