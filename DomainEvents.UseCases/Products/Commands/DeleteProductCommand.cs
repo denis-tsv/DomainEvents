@@ -1,6 +1,5 @@
 ﻿using DomainEvents.Infrastructure.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace DomainEvents.UseCases.Products.Commands;
 
@@ -9,20 +8,18 @@ public record DeleteProductCommand(int ProductId) : IRequest, ITransactionReques
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
 {
     private readonly IDbContext _dbContext;
-    private readonly IPublisher _publisher;
 
-    public DeleteProductCommandHandler(IDbContext dbContext, IPublisher publisher)
+    public DeleteProductCommandHandler(IDbContext dbContext)
     {
         _dbContext = dbContext;
-        _publisher = publisher;
     }
 
     public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        await _dbContext.Products
-            .Where(x => x.Id == request.ProductId)
-            .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsDeleted, true), cancellationToken);
+        var product = await _dbContext.Products.FindAsync(new object?[] { request.ProductId }, cancellationToken);
+        
+        product!.Delete();
 
-        await _publisher.Publish(new ProductDeletedNotification(request.ProductId), cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

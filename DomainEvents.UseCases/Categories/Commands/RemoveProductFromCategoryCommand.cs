@@ -17,12 +17,17 @@ public class RemoveProductFromCategoryCommandHandler : IRequestHandler<RemovePro
 
     public async Task Handle(RemoveProductFromCategoryCommand request, CancellationToken cancellationToken)
     {
-        await _dbContext.ProductCategories
-            .Where(x => x.ProductId == request.ProductId && x.CategoryId == request.CategoryId)
-            .ExecuteDeleteAsync(cancellationToken);
+        var category = await _dbContext.Categories
+            .Include(x => x.Products) //can't include filter because need to check products count
+            .FirstOrDefaultAsync(x => x.Id == request.CategoryId, cancellationToken);
 
-        await _dbContext.Categories
-            .Where(x => x.Id == request.CategoryId && !x.Products.Any())
-            .ExecuteDeleteAsync(cancellationToken);
+        category!.RemoveProduct(request.ProductId);
+
+        if (!category.Products.Any())
+        {
+            _dbContext.Categories.Remove(category);
+        }
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }
