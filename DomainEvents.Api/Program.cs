@@ -18,6 +18,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<De
 builder.Services.AddScoped<CategoryService>();
 
 builder.Services.AddScoped<IExternalService, ExternalService>();
+builder.Services.AddScoped<IMessageBroker, MessageBroker>();
 
 var app = builder.Build();
 
@@ -39,4 +40,9 @@ app.Run();
 public class ExternalService : IExternalService
 {
     public Task LongOperationAsync(CancellationToken token) => Task.CompletedTask;
+}
+
+public class MessageBroker : IMessageBroker
+{
+    public Task SendMessageAsync(object message, CancellationToken token) => Task.CompletedTask;
 }

@@ -10,4 +10,6 @@ public interface IDbSets
     DbSet<Category> Categories { get; }
 
     DbSet<ProductCategory> ProductCategories { get; }
+
+    DbSet<Message> Messages { get; }
 }
