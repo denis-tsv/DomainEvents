@@ -1,6 +1,5 @@
 ﻿using DomainEvents.Entities;
 using DomainEvents.Infrastructure.Interfaces;
-using DomainEvents.UseCases.Categories.Commands;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,26 +8,24 @@ namespace DomainEvents.UseCases.Categories.NotificationHandlers;
 public class ProductDeletedNotificationHandler : INotificationHandler<ProductDeletedNotification>
 {
     private readonly IDbSets _dbSets;
-    private readonly ISender _sender;
+    private readonly CategoryService _categoryService;
 
-    public ProductDeletedNotificationHandler(IDbSets dbSets, ISender sender)
+    public ProductDeletedNotificationHandler(IDbSets dbSets, CategoryService categoryService)
     {
         _dbSets = dbSets;
-        _sender = sender;
+        _categoryService = categoryService;
     }
 
     public async Task Handle(ProductDeletedNotification notification, CancellationToken cancellationToken)
     {
-        var categoryIds = await _dbSets.ProductCategories
-            .Where(x => x.ProductId == notification.ProductId)
-            .Select(x => x.CategoryId)
-            .Distinct()
+        var categories = await _dbSets.Categories
+            .Where(x => x.Products.Any(p => p.ProductId == notification.ProductId))
+            .Include(x => x.Products)
             .ToListAsync(cancellationToken);
 
-        // Command handlers shares not thread safe DbContext, so we send command sequently, but not in parallel
-        foreach (var categoryId in categoryIds)
+        foreach (var category in categories)
         {
-            await _sender.Send(new RemoveProductFromCategoryCommand(notification.ProductId, categoryId), cancellationToken);
+            _categoryService.RemoveProductFromCategory(category, notification.ProductId);
         }
     }
 }
