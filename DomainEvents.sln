@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainEvents.Infrastructure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainEvents.Api", "DomainEvents.Api\DomainEvents.Api.csproj", "{A8F2B47B-7D8F-43CA-8179-1255F68B0025}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainEvents.UseCases", "DomainEvents.UseCases\DomainEvents.UseCases.csproj", "{F7FC4D02-3D54-4278-8A23-5428F475D139}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainEvents.UseCases", "DomainEvents.UseCases\DomainEvents.UseCases.csproj", "{F7FC4D02-3D54-4278-8A23-5428F475D139}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainEvents.Infrastructure.MsSql", "DomainEvents.Infrastructure.MsSql\DomainEvents.Infrastructure.MsSql.csproj", "{E77B4157-27F8-4AFE-99CB-7ED7F9E151B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainEvents.Infrastructure.MsSql", "DomainEvents.Infrastructure.MsSql\DomainEvents.Infrastructure.MsSql.csproj", "{E77B4157-27F8-4AFE-99CB-7ED7F9E151B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainEvents.Tests", "DomainEvents.Tests\DomainEvents.Tests.csproj", "{17421510-877A-4257-8EE4-6E2A9DAB62C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{E77B4157-27F8-4AFE-99CB-7ED7F9E151B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E77B4157-27F8-4AFE-99CB-7ED7F9E151B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E77B4157-27F8-4AFE-99CB-7ED7F9E151B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17421510-877A-4257-8EE4-6E2A9DAB62C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17421510-877A-4257-8EE4-6E2A9DAB62C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17421510-877A-4257-8EE4-6E2A9DAB62C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17421510-877A-4257-8EE4-6E2A9DAB62C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

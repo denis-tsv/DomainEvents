@@ -17,6 +17,7 @@ builder.Services.AddDbContext<IDbContext, AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DomainEvents")));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DeleteProductCommand>());
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionPipelineBehavior<,>));
+builder.Services.AddScoped<IDbSets>(sp => sp.GetRequiredService<IDbContext>());
 
 var app = builder.Build();
 
